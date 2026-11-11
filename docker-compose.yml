@@ -1,0 +1,39 @@
+services:
+  db:
+    image: postgres:15
+    env_file:
+      - .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - data
+
+  api:
+    build: .
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+    depends_on:
+      - db
+    networks:
+      - frontend
+      - data
+
+  web:
+    build: ./client
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
+    networks:
+      - frontend
+
+volumes:
+  postgres_data:
+
+networks:
+  frontend:
+    driver: bridge
+  data:
+    driver: bridge
